@@ -1,6 +1,7 @@
 'use client';
 
 import { ActivityCard } from '@/components/activity-card';
+import { ActivityCardSkeleton } from '@/components/activity-card-skeleton';
 import { FilterButton } from '@/components/filter-button';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -159,10 +160,12 @@ export default function ActivitiesPage() {
       </div>
 
       {/* Activity List */}
-      <main className="flex-1 overflow-auto p-4 md:p-6">
+      <main className="flex-1 overflow-auto p-4 md:p-6 w-full">
         {isLoading ? (
-          <div className="text-center py-12">
-            <p className="text-muted-foreground">Loading activities...</p>
+          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 auto-rows-fr w-full">
+            {Array.from({ length: 6 }).map((_, index) => (
+              <ActivityCardSkeleton key={index} />
+            ))}
           </div>
         ) : filteredActivities.length === 0 ? (
           <div className="text-center py-12">
@@ -171,7 +174,7 @@ export default function ActivitiesPage() {
             </p>
           </div>
         ) : (
-          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 auto-rows-fr">
+          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 auto-rows-fr w-full">
             {filteredActivities.map((activity: any) => (
               <ActivityCard
                 key={activity.id}
