@@ -74,7 +74,7 @@ I wanted it to feel like a **real production app**, not a mock assignment.
 ### User Experience
 
 - 🔍 **Smart Filters** — search by type, subject, or instructor
-- ⭐ **Favorites** — mark and filter preferred items
+- ❤️ **Favorites** — mark and filter preferred items
 - 📊 **Progress Bars** — visual completion indicators
 - 🧭 **Breadcrumbs & Sidebar** — for easy navigation
 - 📱 **Fully Responsive** — optimized for desktop and mobile
@@ -160,7 +160,7 @@ This gave me near real-time sync with the database and a smooth experience.
 
 **Realtime Features in Action:**
 
-- ⭐ **Favorites** — click the star, and it instantly updates across the UI (activity cards, detail pages) with optimistic updates
+- ❤️ **Favorites** — click the heart, and it instantly updates across the UI (activity cards, detail pages) with optimistic updates
 - ✅ **Course/Chapter Completion** — mark a chapter as complete, and the progress bar updates immediately without page reload
 - 🔄 **Filter Changes** — switch between "All", "In Progress", "Completed", or "Favorites" with instant UI response
 
