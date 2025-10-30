@@ -4,14 +4,9 @@ import { ActivityCard } from '@/components/activity-card';
 import { ActivityCardSkeleton } from '@/components/activity-card-skeleton';
 import { FilterButton } from '@/components/filter-button';
 import { Button } from '@/components/ui/button';
+import { CustomSelect } from '@/components/ui/custom-select';
 import { Input } from '@/components/ui/input';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
+import { Skeleton } from '@/components/ui/skeleton';
 import {
   ActivityStatus,
   ActivityType,
@@ -76,8 +71,8 @@ export default function ActivitiesPage() {
   return (
     <div className="flex flex-col h-full">
       {/* Filter Bar */}
-      <div className="border-b bg-background sticky top-0 z-10">
-        <div className="flex flex-col gap-4 p-4 md:p-6">
+      <div className="border-b bg-background sticky top-0 z-10 overflow-visible">
+        <div className="flex flex-col gap-4 p-4 md:p-6 overflow-visible">
           <div className="flex items-center justify-between">
             <div>
               <h1 className="text-2xl md:text-3xl font-bold">My Activities</h1>
@@ -98,7 +93,7 @@ export default function ActivitiesPage() {
               Favourites
             </Button>
           </div>
-          <div className="flex md:flex-row gap-4 md:items-center justify-between w-full">
+          <div className="flex md:flex-row gap-4 md:items-center justify-between w-full overflow-visible">
             {/* Search Bar */}
             <div className="relative flex-1">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
@@ -110,29 +105,25 @@ export default function ActivitiesPage() {
               />
             </div>
             {/* Status Dropdown */}
-            <div className="w- md:w-auto">
-              <Select
+            {isLoading ? (
+              <Skeleton className="h-9 w-[140px] rounded-md" />
+            ) : (
+              <CustomSelect
                 value={statusFilter}
-                onValueChange={(value) =>
+                onChange={(value) =>
                   setStatusFilter(value as ActivityStatus | 'ALL')
                 }
-              >
-                <SelectTrigger
-                  size="sm"
-                  className="h-9 border rounded-md px-4 text-sm font-medium hover:bg-accent hover:text-accent-foreground"
-                >
-                  <SelectValue placeholder="All Statuses" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="ALL">All Statuses</SelectItem>
-                  {getAllActivityStatuses().map((config) => (
-                    <SelectItem key={config.status} value={config.status}>
-                      {config.label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
+                options={[
+                  { value: 'ALL', label: 'All Statuses' },
+                  ...getAllActivityStatuses().map((config) => ({
+                    value: config.status,
+                    label: config.label,
+                  })),
+                ]}
+                placeholder="Status"
+                className="w-[140px] "
+              />
+            )}
           </div>
 
           {/* Filters Row - Responsive */}
