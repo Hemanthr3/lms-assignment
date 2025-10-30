@@ -15,7 +15,7 @@ import {
 } from '@/config/activities.config';
 import { useActivities, useUpdateActivity } from '@/hooks/use-lms-api';
 import { Heart, Search } from 'lucide-react';
-import { useMemo, useOptimistic, useState } from 'react';
+import { useMemo, useOptimistic, useState, useTransition } from 'react';
 import { toast } from 'sonner';
 
 export default function ActivitiesPage() {
@@ -28,6 +28,7 @@ export default function ActivitiesPage() {
 
   const { data: activities = [], isLoading } = useActivities();
   const updateActivity = useUpdateActivity();
+  const [isPending, startTransition] = useTransition();
 
   // Optimistic updates for immediate UI feedback
   const [optimisticActivities, setOptimisticActivities] = useOptimistic(
@@ -49,10 +50,12 @@ export default function ActivitiesPage() {
   ) => {
     const newFavouriteState = !currentFavourite;
 
-    // Optimistically update UI immediately
-    setOptimisticActivities({
-      id: activityId,
-      is_favourite: newFavouriteState,
+    // Optimistically update UI immediately in a transition
+    startTransition(() => {
+      setOptimisticActivities({
+        id: activityId,
+        is_favourite: newFavouriteState,
+      });
     });
 
     try {
@@ -69,7 +72,7 @@ export default function ActivitiesPage() {
           : `Added "${activityTitle}" to favourites`
       );
     } catch (error) {
-      // On error, React Query will refetch and revert
+      // On error, show error toast
       toast.error('Failed to update favourite status');
     }
   };
@@ -109,13 +112,7 @@ export default function ActivitiesPage() {
 
       return matchesSearch && matchesType && matchesStatus && matchesFavourite;
     });
-  }, [
-    optimisticActivities,
-    searchQuery,
-    typeFilter,
-    statusFilter,
-    showFavouritesOnly,
-  ]);
+  }, [activities, searchQuery, typeFilter, statusFilter, showFavouritesOnly]);
 
   // Get unique subjects for filter
   const subjects = useMemo(() => {

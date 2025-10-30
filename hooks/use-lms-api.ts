@@ -76,7 +76,31 @@ export function useUpdateActivity() {
   return useMutation({
     mutationFn: ({ id, data }: { id: number; data: Partial<Activity> }) =>
       api.patch(`/api/activities/${id}`, data).then((res) => res.data),
-    onSuccess: () => {
+    onMutate: async ({ id, data }) => {
+      // Cancel outgoing refetches so they don't overwrite optimistic update
+      await queryClient.cancelQueries({ queryKey: ['activities'] });
+
+      // Snapshot previous value
+      const previousActivities = queryClient.getQueryData(['activities']);
+
+      // Optimistically update cache
+      queryClient.setQueryData(['activities'], (old: any) => {
+        if (!old) return old;
+        return old.map((activity: Activity) =>
+          activity.id === id ? { ...activity, ...data } : activity
+        );
+      });
+
+      return { previousActivities };
+    },
+    onError: (_err, _variables, context) => {
+      // Rollback on error
+      if (context?.previousActivities) {
+        queryClient.setQueryData(['activities'], context.previousActivities);
+      }
+    },
+    onSettled: () => {
+      // Refetch after mutation (data should match so no flicker)
       queryClient.invalidateQueries({ queryKey: ['activities'] });
     },
   });
