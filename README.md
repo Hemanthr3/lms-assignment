@@ -218,13 +218,6 @@ If I had more time, I'd focus on:
 
 ---
 
-## 🧪 Testing
-
-Due to time constraints, I couldn't implement automated test cases — but I structured the project to easily allow:
-
-- Unit tests for hooks and utils
-- Integration tests for API routes
-
 ## 📁 Project Structure
 
 ```
