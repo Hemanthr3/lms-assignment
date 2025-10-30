@@ -7,6 +7,7 @@ import {
   getTypeColorClass,
 } from '@/config/activities.config';
 import { Clock, Heart, Star, Users } from 'lucide-react';
+import Image from 'next/image';
 
 interface ActivityProgress {
   totalChapters?: number;
@@ -78,10 +79,11 @@ export function ActivityCard({
       {/* Thumbnail */}
       <div className="relative aspect-video bg-muted overflow-hidden flex-shrink-0">
         {thumbnail_url ? (
-          <img
+          <Image
             src={thumbnail_url}
             alt={title}
-            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-200"
+            fill
+            className="object-cover group-hover:scale-[1.2] transition-transform duration-200"
           />
         ) : (
           <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-primary/10 to-primary/5">

@@ -18,7 +18,7 @@ export function FilterButton({
       variant={isActive ? 'default' : 'outline'}
       size="sm"
       onClick={onClick}
-      className="whitespace-nowrap"
+      className="whitespace-nowrap cursor-pointer"
     >
       {label}
       {count !== undefined && count > 0 && (
