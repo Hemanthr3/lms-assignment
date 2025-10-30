@@ -1,7 +1,7 @@
 'use client';
 
 import { useSearchParams } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { use, useEffect, useState } from 'react';
 
 // Example: Fetching content based on query params
 async function fetchContentItem(
@@ -24,8 +24,9 @@ async function fetchContentItem(
 export default function CourseDetailPage({
   params,
 }: {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }) {
+  const { id: courseId } = use(params); // Unwrap params Promise
   const searchParams = useSearchParams();
   const itemId = searchParams.get('item');
   const itemType = searchParams.get('type');
@@ -35,14 +36,14 @@ export default function CourseDetailPage({
   useEffect(() => {
     if (itemId && itemType) {
       setLoading(true);
-      fetchContentItem(params.id, itemId, itemType)
+      fetchContentItem(courseId, itemId, itemType)
         .then(setContent)
         .finally(() => setLoading(false));
     } else {
       // No item selected, show course overview
       setContent(null);
     }
-  }, [itemId, itemType, params.id]);
+  }, [itemId, itemType, courseId]);
 
   if (loading) {
     return (
@@ -103,7 +104,7 @@ export default function CourseDetailPage({
           {content?.type}
         </span>
         <h1 className="text-3xl font-bold">{content?.title}</h1>
-        <p className="text-muted-foreground">Course ID: {params.id}</p>
+        <p className="text-muted-foreground">Course ID: {courseId}</p>
       </div>
 
       {/* Different rendering based on content type */}

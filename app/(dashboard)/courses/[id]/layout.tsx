@@ -115,10 +115,11 @@ export default async function CourseDetailLayout({
   params,
 }: {
   children: React.ReactNode;
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }) {
-  const sidebarData = await getCourseData(params.id);
-  const baseUrl = `/dashboard/courses/${params.id}`;
+  const { id } = await params;
+  const sidebarData = await getCourseData(id);
+  const baseUrl = `/dashboard/courses/${id}`;
 
   return (
     <ContentSidebarProvider>
