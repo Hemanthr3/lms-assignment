@@ -1,3 +1,4 @@
+import { Toaster } from '@/components/ui/sonner';
 import ReactQueryProvider from '@/providers/query-provider';
 import { ThemeProvider } from '@/providers/theme-provider';
 import UserProvider from '@/providers/user-provider';
@@ -34,6 +35,7 @@ export default function RootLayout({
               disableTransitionOnChange
             >
               <UserProvider>{children}</UserProvider>
+              <Toaster />
             </ThemeProvider>
           </ReactQueryProvider>
         </body>

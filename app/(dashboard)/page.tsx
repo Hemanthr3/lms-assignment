@@ -13,9 +13,10 @@ import {
   getAllActivityStatuses,
   getAllActivityTypes,
 } from '@/config/activities.config';
-import { useActivities } from '@/hooks/use-lms-api';
+import { useActivities, useUpdateActivity } from '@/hooks/use-lms-api';
 import { Heart, Search } from 'lucide-react';
-import { useMemo, useState } from 'react';
+import { useMemo, useOptimistic, useState } from 'react';
+import { toast } from 'sonner';
 
 export default function ActivitiesPage() {
   const [searchQuery, setSearchQuery] = useState('');
@@ -25,13 +26,64 @@ export default function ActivitiesPage() {
   );
   const [showFavouritesOnly, setShowFavouritesOnly] = useState(false);
 
-  const { data: activities, isLoading } = useActivities();
+  const { data: activities = [], isLoading } = useActivities();
+  const updateActivity = useUpdateActivity();
+
+  // Optimistic updates for immediate UI feedback
+  const [optimisticActivities, setOptimisticActivities] = useOptimistic(
+    activities,
+    (
+      state: any[],
+      { id, is_favourite }: { id: number; is_favourite: boolean }
+    ) =>
+      state.map((activity: any) =>
+        activity.id === id ? { ...activity, is_favourite } : activity
+      )
+  );
+
+  // Handle favourite toggle with optimistic update
+  const handleToggleFavourite = async (
+    activityId: number,
+    currentFavourite: boolean,
+    activityTitle: string
+  ) => {
+    const newFavouriteState = !currentFavourite;
+
+    // Optimistically update UI immediately
+    setOptimisticActivities({
+      id: activityId,
+      is_favourite: newFavouriteState,
+    });
+
+    try {
+      // Make API call in background
+      await updateActivity.mutateAsync({
+        id: activityId,
+        data: { is_favourite: newFavouriteState },
+      });
+
+      // Show success toast
+      toast.success(
+        currentFavourite
+          ? `Removed "${activityTitle}" from favourites`
+          : `Added "${activityTitle}" to favourites`
+      );
+    } catch (error) {
+      // On error, React Query will refetch and revert
+      toast.error('Failed to update favourite status');
+    }
+  };
 
   // Filter activities based on search and filters
   const filteredActivities = useMemo(() => {
-    if (!activities) return [];
+    if (!optimisticActivities || optimisticActivities.length === 0) return [];
 
-    return activities.filter((activity: any) => {
+    // Sort by ID to maintain consistent order
+    const sortedActivities = [...optimisticActivities].sort(
+      (a: any, b: any) => a.id - b.id
+    );
+
+    return sortedActivities.filter((activity: any) => {
       // Search filter
       const matchesSearch =
         !searchQuery ||
@@ -57,7 +109,13 @@ export default function ActivitiesPage() {
 
       return matchesSearch && matchesType && matchesStatus && matchesFavourite;
     });
-  }, [activities, searchQuery, typeFilter, statusFilter, showFavouritesOnly]);
+  }, [
+    optimisticActivities,
+    searchQuery,
+    typeFilter,
+    statusFilter,
+    showFavouritesOnly,
+  ]);
 
   // Get unique subjects for filter
   const subjects = useMemo(() => {
@@ -175,8 +233,11 @@ export default function ActivitiesPage() {
                   // TODO: Navigate to detail page
                 }}
                 onToggleFavourite={() => {
-                  console.log('Toggle favourite:', activity.title);
-                  // TODO: Call update API
+                  handleToggleFavourite(
+                    activity.id,
+                    activity.is_favourite,
+                    activity.title
+                  );
                 }}
               />
             ))}

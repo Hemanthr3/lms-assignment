@@ -71,10 +71,10 @@ export function useCreateActivity() {
   });
 }
 
-export function useUpdateActivity(id: number) {
+export function useUpdateActivity() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (data: Partial<Activity>) =>
+    mutationFn: ({ id, data }: { id: number; data: Partial<Activity> }) =>
       api.patch(`/api/activities/${id}`, data).then((res) => res.data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['activities'] });

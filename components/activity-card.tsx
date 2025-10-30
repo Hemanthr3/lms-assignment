@@ -91,15 +91,21 @@ export function ActivityCard({
           </div>
         )}
 
-        {/* Favorite Badge */}
-        {is_favourite && (
-          <button
-            onClick={onToggleFavourite}
-            className="absolute top-2 right-2 p-2 rounded-full bg-white/90 dark:bg-black/90 hover:bg-white dark:hover:bg-black transition-colors"
-          >
-            <Heart className="h-4 w-4 fill-red-500 text-red-500" />
-          </button>
-        )}
+        {/* Favorite Button */}
+        <Button
+          onClick={() => {
+            onToggleFavourite?.();
+          }}
+          className="absolute top-2 right-2 p-2 rounded-full bg-white/90 dark:bg-black/90 hover:bg-white dark:hover:bg-black transition-all hover:scale-110"
+        >
+          <Heart
+            className={`h-4 w-4 transition-all ${
+              is_favourite
+                ? 'fill-red-500 text-red-500'
+                : 'text-muted-foreground hover:text-red-500'
+            }`}
+          />
+        </Button>
 
         {/* Status Badge */}
         <div className="absolute top-2 left-2">
@@ -117,7 +123,6 @@ export function ActivityCard({
       <div className="p-4 space-y-3 flex flex-col flex-1">
         {/* Type and Subject Tags */}
         <div className="flex items-center gap-2 flex-wrap">
-         
           {subject && (
             <span className="inline-block text-xs font-medium px-2 py-1 rounded-full bg-muted text-muted-foreground">
               {subject}

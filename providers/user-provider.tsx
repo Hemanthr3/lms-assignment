@@ -1,20 +1,19 @@
 'use client';
-import { useApi } from '@/hooks/use-api';
+import api from '@/config/api-config';
 import { useUser } from '@clerk/nextjs';
+import { useMutation } from '@tanstack/react-query';
 import { useEffect } from 'react';
 
 const UserProvider = ({ children }: { children: React.ReactNode }) => {
   const { user, isLoaded } = useUser();
-  const { post } = useApi();
 
-  const { mutateAsync: createUser } = post('/api/user', ['user']);
+  const { mutateAsync: createUser } = useMutation({
+    mutationFn: (data: { name: string; email: string }) =>
+      api.post('/api/user', data).then((res) => res.data),
+  });
 
   useEffect(() => {
     if (isLoaded && user) {
-      console.log(
-        'Creating/checking user:',
-        user.primaryEmailAddress?.emailAddress
-      );
       createUser(
         {
           name: user.fullName || '',
