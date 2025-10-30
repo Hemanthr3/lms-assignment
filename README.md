@@ -61,10 +61,6 @@ npm run dev
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-## Database Documentation
-
-For detailed information about the database schema, API endpoints, and CRUD operations, see [DATABASE.md](./DATABASE.md).
-
 ## Available Scripts
 
 | Script                | Description                    |
@@ -85,36 +81,43 @@ For detailed information about the database schema, API endpoints, and CRUD oper
 ├── app/
 │   ├── (auth)/              # Authentication pages
 │   ├── (dashboard)/         # Dashboard pages
-│   │   ├── assignments/
-│   │   ├── courses/
-│   │   ├── discussions/
-│   │   └── quizzes/
+│   │   ├── assignments/     # Assignment detail pages
+│   │   ├── courses/         # Course detail pages
+│   │   ├── discussions/     # Discussion detail pages
+│   │   └── quizzes/         # Quiz detail pages
 │   └── api/                 # API routes
 │       ├── activities/
 │       ├── assignments/
 │       ├── courses/
 │       ├── discussions/
-│       └── quizzes/
-├── components/              # React components
-│   └── ui/                  # UI components (Radix)
-├── config/                  # Configuration
-│   ├── db.ts               # Database connection
-│   └── schema.ts           # Database schema
+│       ├── quizzes/
+│       └── user/
+├── components/
+│   ├── assignment/          # Assignment components
+│   ├── course/              # Course components
+│   ├── discussion/          # Discussion components
+│   ├── layout/              # Layout components
+│   ├── quiz/                # Quiz components
+│   └── ui/                  # UI components (Shadcn)
+├── config/
+│   ├── activities.config.ts # Activity configuration
+│   ├── api-config.ts        # API configuration
+│   ├── db.ts                # Database connection
+│   └── schema.ts            # Database schema (Drizzle)
+├── contexts/                # React contexts
 ├── hooks/
-│   ├── use-api.ts          # Centralized API wrapper
-│   └── use-lms-api.ts      # LMS-specific hooks
+│   ├── use-lms-api.ts       # LMS API hooks (React Query)
+│   └── use-mobile.ts        # Mobile detection
 ├── lib/
-│   ├── crud/               # CRUD operations
-│   │   ├── activities.ts
-│   │   ├── assignments.ts
-│   │   ├── courses.ts
-│   │   ├── discussions.ts
-│   │   └── quizzes.ts
-│   └── utils.ts            # Utility functions
+│   ├── api/                 # API utilities
+│   ├── crud/                # CRUD operations
+│   ├── utils/               # Utility functions
+│   └── navigation.ts        # Navigation utilities
+├── providers/               # Context providers
 ├── scripts/
-│   ├── seed.ts             # Database seeding
-│   └── reset.ts            # Database reset
-└── providers/              # Context providers
+│   ├── seed.ts              # Database seeding
+│   └── reset.ts             # Database reset
+└── types/                   # TypeScript types
 ```
 
 ## API Endpoints

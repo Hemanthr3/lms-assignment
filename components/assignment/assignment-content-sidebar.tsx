@@ -14,8 +14,6 @@ export function AssignmentContentSidebar({
   // Fetch assignment data using React Query
   const { data: assignment, isLoading } = useAssignment(assignmentId);
 
-  console.log('assignment', assignment);
-
   if (isLoading) {
     return (
       <div className="w-64 border-r bg-muted/30 p-4 space-y-4 h-full">

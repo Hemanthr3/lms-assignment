@@ -8,8 +8,6 @@ export async function POST(request: Request) {
     const body = await request.json();
     const { name, email } = body;
 
-    console.log('Received user data:', { name, email });
-
     if (!email) {
       return NextResponse.json({ error: 'Email is required' }, { status: 400 });
     }
@@ -20,16 +18,13 @@ export async function POST(request: Request) {
       .where(eq(usersTable.email, email));
 
     if (existingUser.length === 0) {
-      console.log('Creating new user...');
       const user = await db
         .insert(usersTable)
         .values({ name, email })
         .returning();
-      console.log('User created:', user[0]);
       return NextResponse.json(user[0]);
     }
 
-    console.log('User already exists:', existingUser[0]);
     return NextResponse.json(existingUser[0]);
   } catch (error) {
     console.error('Error in POST /api/user:', error);
