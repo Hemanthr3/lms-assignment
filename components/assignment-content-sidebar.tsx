@@ -45,19 +45,21 @@ export function AssignmentContentSidebar({
     title: assignment.title,
     activityType: 'assignment' as const,
     sidebarLabel: 'Assignment Sections',
-    sections: (assignment.sections || []).map((section: any, sectionIndex: number) => ({
-      id: `section-${sectionIndex}`,
-      title: section.title || `Section ${sectionIndex + 1}`,
-      type: 'chapter' as const,
-      items: [
-        {
-          id: `${sectionIndex + 1}-details`,
-          type: 'assignment' as const,
-          title: 'Details',
-          completed: false,
-        },
-      ],
-    })),
+    sections: (assignment.sections || []).map(
+      (section: any, sectionIndex: number) => ({
+        id: `section-${sectionIndex}`,
+        title: section.title || `Section ${sectionIndex + 1}`,
+        type: 'chapter' as const,
+        items: [
+          {
+            id: `${sectionIndex + 1}-details`,
+            type: 'assignment' as const,
+            title: 'Details',
+            completed: false,
+          },
+        ],
+      })
+    ),
   };
 
   return (
