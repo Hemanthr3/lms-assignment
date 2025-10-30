@@ -1,210 +1,193 @@
 'use client';
 
+import { CourseBreadcrumb } from '@/components/course-breadcrumb';
+import { Button } from '@/components/ui/button';
+import { Skeleton } from '@/components/ui/skeleton';
+import { useCourse, useUpdateCourse } from '@/hooks/use-lms-api';
+import { Check, Clock, PlayCircle } from 'lucide-react';
 import { useSearchParams } from 'next/navigation';
-import { use, useEffect, useState } from 'react';
-
-// Example: Fetching content based on query params
-async function fetchContentItem(
-  courseId: string,
-  itemId: string,
-  itemType: string
-) {
-  // In a real app: await fetch(`/api/courses/${courseId}/items/${itemId}?type=${itemType}`)
-  // Mock data for demonstration
-  await new Promise((resolve) => setTimeout(resolve, 0)); // Simulate network delay
-
-  return {
-    id: itemId,
-    type: itemType,
-    title: `${itemType.charAt(0).toUpperCase() + itemType.slice(1)}: ${itemId}`,
-    content: `This is the content for ${itemType} with ID ${itemId}`,
-  };
-}
+import { use } from 'react';
+import { toast } from 'sonner';
 
 export default function CourseDetailPage({
   params,
 }: {
   params: Promise<{ id: string }>;
 }) {
-  const { id: courseId } = use(params); // Unwrap params Promise
+  const { id } = use(params);
+  const courseId = parseInt(id);
   const searchParams = useSearchParams();
-  const itemId = searchParams.get('item');
-  const itemType = searchParams.get('type');
-  const [content, setContent] = useState<any>(null);
-  const [loading, setLoading] = useState(false);
+  const selectedItemId = searchParams.get('item');
 
-  useEffect(() => {
-    if (itemId && itemType) {
-      setLoading(true);
-      fetchContentItem(courseId, itemId, itemType)
-        .then(setContent)
-        .finally(() => setLoading(false));
-    } else {
-      // No item selected, show course overview
-      setContent(null);
+  // Fetch course data using React Query (cached with sidebar)
+  const { data: course, isLoading } = useCourse(courseId);
+  const updateCourse = useUpdateCourse(courseId);
+
+  // Parse selected item from URL (format: "lessonIndex-chapterIndex" e.g., "1-2")
+  const [lessonIndex, chapterIndex] = selectedItemId
+    ? selectedItemId.split('-').map((n) => parseInt(n) - 1)
+    : [0, 0];
+
+  // Get current lesson and chapter
+  const currentLessonData = course?.lessons?.[lessonIndex];
+  const currentChapter = currentLessonData?.chapters?.[chapterIndex];
+
+  const handleToggleCompletion = async () => {
+    if (!course || !currentChapter) return;
+
+    const newCompletedStatus = !currentChapter.completed;
+
+    try {
+      const updatedLessons = course.lessons.map(
+        (lesson: any, lesIdx: number) => {
+          if (lesIdx === lessonIndex) {
+            return {
+              ...lesson,
+              chapters: lesson.chapters.map((chapter: any, chapIdx: number) => {
+                if (chapIdx === chapterIndex) {
+                  return { ...chapter, completed: newCompletedStatus };
+                }
+                return chapter;
+              }),
+            };
+          }
+          return lesson;
+        }
+      );
+
+      await updateCourse.mutateAsync({
+        lessons: updatedLessons,
+      });
+
+      toast.success(
+        newCompletedStatus
+          ? `Marked "${currentChapter.title}" as complete!`
+          : `Marked "${currentChapter.title}" as incomplete`
+      );
+    } catch (error) {
+      toast.error('Failed to update lesson status');
     }
-  }, [itemId, itemType, courseId]);
+  };
 
-  if (loading) {
+  if (isLoading) {
     return (
-      <div className="flex flex-1 flex-col gap-4 p-4 md:p-6">
-        <div className="animate-pulse space-y-4">
-          <div className="space-y-2">
-            <div className="h-8 bg-muted rounded w-1/4"></div>
-            <div className="h-4 bg-muted rounded w-1/3"></div>
-          </div>
-          <div className="aspect-video bg-muted rounded-xl"></div>
-          <div className="space-y-2">
-            <div className="h-4 bg-muted rounded w-3/4"></div>
-            <div className="h-4 bg-muted rounded w-2/3"></div>
-            <div className="h-4 bg-muted rounded w-1/2"></div>
-          </div>
+      <div className="max-w-5xl mx-auto p-6 space-y-6 w-full">
+        <Skeleton className="h-6 w-1/3" />
+        <Skeleton className="h-10 w-2/3" />
+        <Skeleton className="aspect-video w-full rounded-lg" />
+        <div className="space-y-2">
+          <Skeleton className="h-4 w-full" />
+          <Skeleton className="h-4 w-5/6" />
+          <Skeleton className="h-4 w-4/6" />
         </div>
       </div>
     );
   }
 
-  if (!itemId || !itemType) {
+  if (!course || !currentChapter || !currentLessonData) {
     return (
-      <div className="flex flex-1 flex-col gap-4 p-4 md:p-6">
-        <div className="space-y-2">
-          <h1 className="text-3xl font-bold">
-            Introduction to Machine Learning
-          </h1>
-          <p className="text-muted-foreground">
-            Welcome to the course! Select a lesson from the sidebar to get
-            started.
-          </p>
-        </div>
-
-        <div className="bg-muted/50 rounded-xl p-6 space-y-4">
-          <h2 className="text-xl font-semibold">Course Overview</h2>
-          <div className="prose dark:prose-invert max-w-none">
-            <p>
-              This course covers Machine Learning fundamentals including linear
-              regression, neural networks, and advanced techniques.
-            </p>
-            <h3>What You'll Learn</h3>
-            <ul>
-              <li>Understand core ML concepts and algorithms</li>
-              <li>Build and train machine learning models</li>
-              <li>Apply ML to real-world problems</li>
-              <li>Evaluate and optimize model performance</li>
-            </ul>
-          </div>
-        </div>
+      <div className="flex items-center justify-center h-full">
+        <p className="text-muted-foreground">
+          {!course
+            ? 'Course not found'
+            : 'Please select a chapter from the sidebar'}
+        </p>
       </div>
     );
   }
 
   return (
-    <div className="flex flex-1 flex-col gap-4 p-4 md:p-6">
-      <div className="space-y-2">
-        <span className="text-xs text-muted-foreground uppercase tracking-wide">
-          {content?.type}
-        </span>
-        <h1 className="text-3xl font-bold">{content?.title}</h1>
-        <p className="text-muted-foreground">Course ID: {courseId}</p>
+    <div className="max-w-5xl mx-auto p-6 space-y-6 w-full">
+      {/* Breadcrumb */}
+      <CourseBreadcrumb
+        items={[
+          { label: course.title, href: `/courses/${courseId}` },
+          { label: currentLessonData.title },
+          { label: currentChapter.title },
+        ]}
+      />
+
+      {/* Chapter Header */}
+      <div className="flex items-start justify-between gap-4">
+        <div className="flex-1">
+          <h1 className="text-3xl font-bold">{currentChapter.title}</h1>
+          {currentChapter.duration && (
+            <p className="text-muted-foreground mt-2 flex items-center gap-2">
+              <Clock className="h-4 w-4" />
+              {currentChapter.duration}
+            </p>
+          )}
+        </div>
+        <Button
+          onClick={handleToggleCompletion}
+          variant={currentChapter.completed ? 'outline' : 'default'}
+          size="lg"
+          className={`flex-shrink-0 ${
+            currentChapter.completed
+              ? 'border-green-500 text-green-600 dark:text-green-500 hover:bg-green-50 dark:hover:bg-green-950'
+              : ''
+          }`}
+          disabled={updateCourse.isPending}
+        >
+          {currentChapter.completed ? (
+            <>
+              <Check className="h-4 w-4 mr-2" />
+              Completed
+            </>
+          ) : (
+            'Mark as Complete'
+          )}
+        </Button>
       </div>
 
-      {/* Different rendering based on content type */}
-      {content?.type === 'lesson' && (
-        <>
-          {/* Video Player Area */}
-          <div className="bg-muted/50 aspect-video rounded-xl flex items-center justify-center">
-            <div className="text-center space-y-2">
-              <p className="text-muted-foreground text-lg">Video Player Area</p>
-              <p className="text-xs text-muted-foreground">Item ID: {itemId}</p>
-            </div>
-          </div>
+      {/* Video Player Mock */}
+      <div className="relative aspect-video bg-black rounded-lg overflow-hidden group cursor-pointer hover:bg-black/90 transition-colors">
+        <div className="absolute inset-0 flex items-center justify-center">
+          <PlayCircle className="h-20 w-20 text-white/80 group-hover:text-white group-hover:scale-110 transition-all" />
+        </div>
+        <div className="absolute bottom-4 left-4 text-white text-sm bg-black/50 px-3 py-1 rounded">
+          Mock Video Player
+        </div>
+      </div>
 
-          {/* Lesson Content */}
-          <div className="prose dark:prose-invert max-w-none">
-            <h2>Learning Objectives</h2>
-            <ul>
-              <li>Understand linear regression concepts</li>
-              <li>Learn to train models with gradient descent</li>
-              <li>Apply techniques to real-world datasets</li>
-            </ul>
-            <p>{content?.content}</p>
-          </div>
-        </>
-      )}
+      {/* Chapter Description */}
+      <div className="prose dark:prose-invert max-w-none">
+        <h3>About this chapter</h3>
+        <p>
+          This is a placeholder description for{' '}
+          <strong>{currentChapter.title}</strong>. In a real application, this
+          would contain detailed information about what the learner will learn
+          in this chapter, including:
+        </p>
+        <ul>
+          <li>Learning objectives</li>
+          <li>Key concepts covered</li>
+          <li>Prerequisites</li>
+          <li>Additional resources</li>
+        </ul>
+      </div>
 
-      {content?.type === 'quiz' && (
-        <div className="bg-muted/50 rounded-xl p-6 space-y-4">
-          <h2 className="text-xl font-semibold">Quiz Interface</h2>
-          <p className="text-muted-foreground">
-            Quiz questions and submission interface would be rendered here.
+      {/* Course Metadata */}
+      <div className="border-t pt-6 grid grid-cols-2 md:grid-cols-4 gap-4">
+        <div>
+          <p className="text-sm text-muted-foreground">Instructor</p>
+          <p className="font-medium">{course.instructor_name || 'N/A'}</p>
+        </div>
+        <div>
+          <p className="text-sm text-muted-foreground">Level</p>
+          <p className="font-medium capitalize">{course.level || 'N/A'}</p>
+        </div>
+        <div>
+          <p className="text-sm text-muted-foreground">Subject</p>
+          <p className="font-medium">{course.subject || 'N/A'}</p>
+        </div>
+        <div>
+          <p className="text-sm text-muted-foreground">Rating</p>
+          <p className="font-medium">
+            {course.rating ? `${course.rating} ⭐` : 'N/A'}
           </p>
-          <div className="space-y-2">
-            <p className="text-sm font-medium">Example Question:</p>
-            <div className="bg-background rounded-lg p-4 space-y-2">
-              <p className="text-sm">
-                What is the purpose of gradient descent?
-              </p>
-              <div className="space-y-1">
-                <label className="flex items-center gap-2 text-sm cursor-pointer">
-                  <input type="radio" name="q1" />
-                  <span>To minimize the cost function</span>
-                </label>
-                <label className="flex items-center gap-2 text-sm cursor-pointer">
-                  <input type="radio" name="q1" />
-                  <span>To maximize accuracy</span>
-                </label>
-              </div>
-            </div>
-          </div>
         </div>
-      )}
-
-      {content?.type === 'assignment' && (
-        <div className="space-y-4">
-          <div className="bg-muted/50 rounded-xl p-6 space-y-4">
-            <h2 className="text-xl font-semibold">Assignment Instructions</h2>
-            <div className="prose dark:prose-invert max-w-none">
-              <p>{content?.content}</p>
-              <h3>Requirements:</h3>
-              <ul>
-                <li>Complete all parts of the assignment</li>
-                <li>Submit before the deadline</li>
-                <li>Follow the coding guidelines</li>
-              </ul>
-            </div>
-          </div>
-
-          <div className="bg-muted/50 rounded-xl p-6 space-y-4">
-            <h3 className="text-lg font-semibold">Submission</h3>
-            <p className="text-sm text-muted-foreground">
-              Upload your completed assignment here.
-            </p>
-            <button className="px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90">
-              Upload File
-            </button>
-          </div>
-        </div>
-      )}
-
-      {content?.type === 'discussion' && (
-        <div className="bg-muted/50 rounded-xl p-6 space-y-4">
-          <h2 className="text-xl font-semibold">Discussion Thread</h2>
-          <p className="text-muted-foreground">
-            Discussion forum interface would be rendered here.
-          </p>
-          <div className="space-y-4">
-            <div className="bg-background rounded-lg p-4">
-              <p className="text-sm font-medium mb-2">Post your thoughts:</p>
-              <textarea
-                className="w-full min-h-[100px] p-2 rounded border bg-background"
-                placeholder="Share your insights..."
-              />
-              <button className="mt-2 px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90">
-                Post Reply
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+      </div>
     </div>
   );
 }

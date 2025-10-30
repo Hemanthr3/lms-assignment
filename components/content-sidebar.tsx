@@ -135,11 +135,14 @@ export function ContentSidebar({ data, baseUrl }: ContentSidebarProps) {
                   <div>
                     <CollapsibleTrigger asChild>
                       <button className="flex w-full items-center gap-2 rounded-md px-3 py-2 text-sm hover:bg-accent hover:text-accent-foreground">
-                        <BookOpen className="h-4 w-4" />
-                        <span className="flex-1 text-left">
+                        <BookOpen className="h-4 w-4 flex-shrink-0" />
+                        <span
+                          className="flex-1 text-left truncate"
+                          title={section.title}
+                        >
                           {section.title}
                         </span>
-                        <ChevronRight className="h-4 w-4 transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
+                        <ChevronRight className="h-4 w-4 flex-shrink-0 transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
                       </button>
                     </CollapsibleTrigger>
                     <CollapsibleContent className="pl-6">
@@ -176,7 +179,10 @@ export function ContentSidebar({ data, baseUrl }: ContentSidebarProps) {
                                 }`}
                               />
                               <div className="flex flex-col flex-1 min-w-0">
-                                <span className="text-xs truncate">
+                                <span
+                                  className="text-xs truncate"
+                                  title={item.title}
+                                >
                                   {item.title}
                                 </span>
                                 {metadata && (

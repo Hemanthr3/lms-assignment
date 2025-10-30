@@ -13,6 +13,7 @@ export function ContentSidebarWrapper({
   baseUrl,
 }: ContentSidebarWrapperProps) {
   const { isOpen, close } = useContentSidebar();
+  console.log('data', data);
 
   return (
     <>

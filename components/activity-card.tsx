@@ -24,15 +24,15 @@ interface ActivityCardProps {
   id: number;
   type: ActivityType;
   title: string;
-  description?: string;
-  subject?: string;
-  thumbnail_url?: string;
-  instructor_name?: string;
-  duration?: string;
-  status: ActivityStatus;
-  rating?: number;
-  students_enrolled?: number;
-  is_favourite?: boolean;
+  description?: string | null;
+  subject?: string | null;
+  thumbnail_url?: string | null;
+  instructor_name?: string | null;
+  duration?: string | null;
+  status: ActivityStatus | null;
+  rating?: number | null;
+  students_enrolled?: number | null;
+  is_favourite?: boolean | null;
   progress?: ActivityProgress;
   onAction?: () => void;
   onToggleFavourite?: () => void;
@@ -65,6 +65,8 @@ export function ActivityCard({
         return { text: 'Review', variant: 'outline' as const };
       case 'UPCOMING':
         return { text: 'View Details', variant: 'outline' as const };
+      case null:
+        return { text: 'Start', variant: 'default' as const };
       default:
         return { text: 'View', variant: 'outline' as const };
     }

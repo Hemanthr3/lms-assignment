@@ -14,7 +14,10 @@ import {
   getAllActivityTypes,
 } from '@/config/activities.config';
 import { useActivities, useUpdateActivity } from '@/hooks/use-lms-api';
+import { navigateToActivityDetail } from '@/lib/navigation';
+import { Activity } from '@/types/database';
 import { Heart, Search } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 import { useMemo, useOptimistic, useState, useTransition } from 'react';
 import { toast } from 'sonner';
 
@@ -29,6 +32,7 @@ export default function ActivitiesPage() {
   const { data: activities = [], isLoading } = useActivities();
   const updateActivity = useUpdateActivity();
   const [isPending, startTransition] = useTransition();
+  const router = useRouter();
 
   // Optimistic updates for immediate UI feedback
   const [optimisticActivities, setOptimisticActivities] = useOptimistic(
@@ -182,7 +186,7 @@ export default function ActivitiesPage() {
           </div>
 
           {/* Filters Row - Responsive */}
-          <div className="flex md:flex-row gap-4 md:items-center justify-between w-full">
+          <div className="flex md:flex-row gap-4 md:items-center justify-between w-full overflow-auto">
             {/* Type Filters */}
             <div className="flex-1">
               <div className="flex gap-2 overflow-x-auto pb-2 md:pb-0">
@@ -221,18 +225,21 @@ export default function ActivitiesPage() {
           </div>
         ) : (
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 auto-rows-fr w-full">
-            {filteredActivities.map((activity: any) => (
+            {filteredActivities.map((activity: Activity) => (
               <ActivityCard
                 key={activity.id}
                 {...activity}
                 onAction={() => {
-                  console.log('Action clicked for:', activity.title);
-                  // TODO: Navigate to detail page
+                  navigateToActivityDetail(
+                    router,
+                    activity.type,
+                    activity.ref_id
+                  );
                 }}
                 onToggleFavourite={() => {
                   handleToggleFavourite(
                     activity.id,
-                    activity.is_favourite,
+                    activity.is_favourite ?? false,
                     activity.title
                   );
                 }}
