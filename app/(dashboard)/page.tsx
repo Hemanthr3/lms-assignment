@@ -5,6 +5,13 @@ import { FilterButton } from '@/components/filter-button';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import {
   ActivityStatus,
   ActivityType,
   getAllActivityStatuses,
@@ -68,7 +75,7 @@ export default function ActivitiesPage() {
   return (
     <div className="flex flex-col h-full">
       {/* Filter Bar */}
-      <div className="border-b bg-background">
+      <div className="border-b bg-background sticky top-0 z-10">
         <div className="flex flex-col gap-4 p-4 md:p-6">
           <div className="flex items-center justify-between">
             <div>
@@ -90,59 +97,62 @@ export default function ActivitiesPage() {
               Favourites
             </Button>
           </div>
-
-          {/* Search Bar */}
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-            <Input
-              placeholder="Search by title, subject, instructor..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-10"
-            />
-          </div>
-
-          {/* Type Filters */}
-          <div>
-            <p className="text-xs font-medium text-muted-foreground mb-2">
-              Type
-            </p>
-            <div className="flex gap-2 overflow-x-auto pb-2">
-              <FilterButton
-                label="All"
-                isActive={typeFilter === 'ALL'}
-                onClick={() => setTypeFilter('ALL')}
+          <div className="flex md:flex-row gap-4 md:items-center justify-between w-full">
+            {/* Search Bar */}
+            <div className="relative flex-1">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <Input
+                placeholder="Search by title, subject, instructor..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="pl-10"
               />
-              {getAllActivityTypes().map((config) => (
-                <FilterButton
-                  key={config.type}
-                  label={config.label + 's'}
-                  isActive={typeFilter === config.type}
-                  onClick={() => setTypeFilter(config.type)}
-                />
-              ))}
+            </div>
+            {/* Status Dropdown */}
+            <div className="w- md:w-auto">
+              <Select
+                value={statusFilter}
+                onValueChange={(value) =>
+                  setStatusFilter(value as ActivityStatus | 'ALL')
+                }
+              >
+                <SelectTrigger
+                  size="sm"
+                  className="h-9 border rounded-md px-4 text-sm font-medium hover:bg-accent hover:text-accent-foreground"
+                >
+                  <SelectValue placeholder="All Statuses" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="ALL">All Statuses</SelectItem>
+                  {getAllActivityStatuses().map((config) => (
+                    <SelectItem key={config.status} value={config.status}>
+                      {config.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
           </div>
 
-          {/* Status Filters */}
-          <div>
-            <p className="text-xs font-medium text-muted-foreground mb-2">
-              Status
-            </p>
-            <div className="flex gap-2 overflow-x-auto pb-2">
-              <FilterButton
-                label="All"
-                isActive={statusFilter === 'ALL'}
-                onClick={() => setStatusFilter('ALL')}
-              />
-              {getAllActivityStatuses().map((config) => (
+          {/* Filters Row - Responsive */}
+          <div className="flex md:flex-row gap-4 md:items-center justify-between w-full">
+            {/* Type Filters */}
+            <div className="flex-1">
+              <div className="flex gap-2 overflow-x-auto pb-2 md:pb-0">
                 <FilterButton
-                  key={config.status}
-                  label={config.label}
-                  isActive={statusFilter === config.status}
-                  onClick={() => setStatusFilter(config.status)}
+                  label="All"
+                  isActive={typeFilter === 'ALL'}
+                  onClick={() => setTypeFilter('ALL')}
                 />
-              ))}
+                {getAllActivityTypes().map((config) => (
+                  <FilterButton
+                    key={config.type}
+                    label={config.label + 's'}
+                    isActive={typeFilter === config.type}
+                    onClick={() => setTypeFilter(config.type)}
+                  />
+                ))}
+              </div>
             </div>
           </div>
         </div>
@@ -161,7 +171,7 @@ export default function ActivitiesPage() {
             </p>
           </div>
         ) : (
-          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 auto-rows-fr">
             {filteredActivities.map((activity: any) => (
               <ActivityCard
                 key={activity.id}

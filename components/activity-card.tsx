@@ -74,9 +74,9 @@ export function ActivityCard({
   const TypeIcon = typeConfig.icon;
 
   return (
-    <div className="group relative bg-card border rounded-lg overflow-hidden hover:shadow-lg transition-all duration-200">
+    <div className="group relative bg-card border rounded-lg overflow-hidden hover:shadow-lg transition-all duration-200 flex flex-col h-full">
       {/* Thumbnail */}
-      <div className="relative aspect-video bg-muted overflow-hidden">
+      <div className="relative aspect-video bg-muted overflow-hidden flex-shrink-0">
         {thumbnail_url ? (
           <img
             src={thumbnail_url}
@@ -112,7 +112,7 @@ export function ActivityCard({
       </div>
 
       {/* Content */}
-      <div className="p-4 space-y-3">
+      <div className="p-4 space-y-3 flex flex-col flex-1">
         {/* Type and Subject Tags */}
         <div className="flex items-center gap-2 flex-wrap">
           <span
@@ -234,7 +234,7 @@ export function ActivityCard({
         {/* Action Button */}
         <Button
           variant={actionButton.variant}
-          className="w-full"
+          className="w-full mt-auto"
           onClick={onAction}
         >
           {actionButton.text}
