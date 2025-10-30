@@ -117,14 +117,7 @@ export function ActivityCard({
       <div className="p-4 space-y-3 flex flex-col flex-1">
         {/* Type and Subject Tags */}
         <div className="flex items-center gap-2 flex-wrap">
-          <span
-            className={`inline-flex items-center gap-1 text-xs font-semibold py-1 rounded ${getTypeColorClass(
-              type
-            )}`}
-          >
-            <TypeIcon className="h-3 w-3" />
-            {typeConfig.label}
-          </span>
+         
           {subject && (
             <span className="inline-block text-xs font-medium px-2 py-1 rounded-full bg-muted text-muted-foreground">
               {subject}
