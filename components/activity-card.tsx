@@ -83,7 +83,7 @@ export function ActivityCard({
             src={thumbnail_url}
             alt={title}
             fill
-            className="object-cover group-hover:scale-[1.2] transition-transform duration-200"
+            className="object-cover group-hover:scale-[1.05] transition-transform duration-200"
           />
         ) : (
           <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-primary/10 to-primary/5">
