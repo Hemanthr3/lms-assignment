@@ -1,24 +1,142 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# LMS Assignment - Learning Management System
 
-## Getting Started
+A full-stack Learning Management System built with Next.js, Drizzle ORM, and PostgreSQL.
 
-First, run the development server:
+## Features
+
+- 📚 **Courses** with lessons and chapters
+- 📝 **Quizzes** with multiple question types
+- 📋 **Assignments** with submission tracking
+- 💬 **Discussions** with posts and replies
+- 🎯 **Activities** registry for all learning content
+- 🏷️ **Subject-based** organization across all content types
+
+## Tech Stack
+
+- **Framework**: Next.js 16 (App Router)
+- **Database**: PostgreSQL (Neon)
+- **ORM**: Drizzle ORM
+- **Styling**: Tailwind CSS
+- **UI Components**: Radix UI
+- **State Management**: TanStack Query
+- **Auth**: Clerk
+
+## Quick Start
+
+### 1. Install Dependencies
+
+```bash
+npm install
+```
+
+### 2. Setup Environment Variables
+
+Create a `.env` file in the root directory:
+
+```env
+DATABASE_URL=your_neon_database_url
+NEXT_PUBLIC_BASE_URL=http://localhost:3000
+NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=your_clerk_key
+CLERK_SECRET_KEY=your_clerk_secret
+```
+
+### 3. Setup Database
+
+```bash
+# Push schema to database
+npm run db:push
+
+# Seed with sample data
+npm run db:seed
+
+# (Optional) Open Drizzle Studio to view data
+npm run db:studio
+```
+
+### 4. Run Development Server
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Database Documentation
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+For detailed information about the database schema, API endpoints, and CRUD operations, see [DATABASE.md](./DATABASE.md).
+
+## Available Scripts
+
+| Script                | Description                    |
+| --------------------- | ------------------------------ |
+| `npm run dev`         | Start development server       |
+| `npm run build`       | Build for production           |
+| `npm run start`       | Start production server        |
+| `npm run lint`        | Run ESLint                     |
+| `npm run db:generate` | Generate migration files       |
+| `npm run db:push`     | Push schema to database        |
+| `npm run db:studio`   | Open Drizzle Studio            |
+| `npm run db:seed`     | Seed database with sample data |
+| `npm run db:reset`    | Clear all database data        |
+
+## Project Structure
+
+```
+├── app/
+│   ├── (auth)/              # Authentication pages
+│   ├── (dashboard)/         # Dashboard pages
+│   │   ├── assignments/
+│   │   ├── courses/
+│   │   ├── discussions/
+│   │   └── quizzes/
+│   └── api/                 # API routes
+│       ├── activities/
+│       ├── assignments/
+│       ├── courses/
+│       ├── discussions/
+│       └── quizzes/
+├── components/              # React components
+│   └── ui/                  # UI components (Radix)
+├── config/                  # Configuration
+│   ├── db.ts               # Database connection
+│   └── schema.ts           # Database schema
+├── hooks/
+│   ├── use-api.ts          # Centralized API wrapper
+│   └── use-lms-api.ts      # LMS-specific hooks
+├── lib/
+│   ├── crud/               # CRUD operations
+│   │   ├── activities.ts
+│   │   ├── assignments.ts
+│   │   ├── courses.ts
+│   │   ├── discussions.ts
+│   │   └── quizzes.ts
+│   └── utils.ts            # Utility functions
+├── scripts/
+│   ├── seed.ts             # Database seeding
+│   └── reset.ts            # Database reset
+└── providers/              # Context providers
+```
+
+## API Endpoints
+
+All entities support RESTful operations:
+
+- **GET** `/api/{entity}` - Get all items (with optional filters)
+- **GET** `/api/{entity}/[id]` - Get single item
+- **POST** `/api/{entity}` - Create new item
+- **PATCH** `/api/{entity}/[id]` - Update item
+- **DELETE** `/api/{entity}/[id]` - Delete item
+
+Entities: `activities`, `courses`, `quizzes`, `assignments`, `discussions`
+
+### Example Filters
+
+```
+GET /api/activities?type=COURSE
+GET /api/activities?subject=Artificial Intelligence
+GET /api/courses?level=BEGINNER
+GET /api/quizzes?difficulty=EASY
+```
 
 ## Learn More
 

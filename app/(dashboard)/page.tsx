@@ -2,11 +2,14 @@
 
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { useActivities } from '@/hooks/use-lms-api';
 import { Search } from 'lucide-react';
 import { useState } from 'react';
 
 export default function ActivitiesPage() {
   const [searchQuery, setSearchQuery] = useState('');
+  const { data: activities, isLoading: activitiesLoading } = useActivities();
+  console.log('activities', activities);
 
   return (
     <div className="flex flex-col h-full">

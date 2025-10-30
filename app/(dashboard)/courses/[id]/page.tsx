@@ -11,7 +11,7 @@ async function fetchContentItem(
 ) {
   // In a real app: await fetch(`/api/courses/${courseId}/items/${itemId}?type=${itemType}`)
   // Mock data for demonstration
-  await new Promise((resolve) => setTimeout(resolve, 300)); // Simulate network delay
+  await new Promise((resolve) => setTimeout(resolve, 0)); // Simulate network delay
 
   return {
     id: itemId,
