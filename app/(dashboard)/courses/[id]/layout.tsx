@@ -1,5 +1,5 @@
-import { ContentSidebarTrigger } from '@/components/content-sidebar-trigger';
-import { CourseContentSidebar } from '@/components/course-content-sidebar';
+import { CourseContentSidebar } from '@/components/course/course-content-sidebar';
+import { ContentSidebarTrigger } from '@/components/layout/content-sidebar-trigger';
 import { ContentSidebarProvider } from '@/contexts/content-sidebar-context';
 
 export default async function CourseDetailLayout({

@@ -1,5 +1,5 @@
-import { ContentSidebarTrigger } from '@/components/content-sidebar-trigger';
-import { QuizContentSidebar } from '@/components/quiz-content-sidebar';
+import { ContentSidebarTrigger } from '@/components/layout/content-sidebar-trigger';
+import { QuizContentSidebar } from '@/components/quiz/quiz-content-sidebar';
 import { ContentSidebarProvider } from '@/contexts/content-sidebar-context';
 
 export default async function QuizDetailLayout({

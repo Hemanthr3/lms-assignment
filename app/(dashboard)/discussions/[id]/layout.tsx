@@ -1,5 +1,5 @@
-import { ContentSidebarTrigger } from '@/components/content-sidebar-trigger';
-import { DiscussionContentSidebar } from '@/components/discussion-content-sidebar';
+import { DiscussionContentSidebar } from '@/components/discussion/discussion-content-sidebar';
+import { ContentSidebarTrigger } from '@/components/layout/content-sidebar-trigger';
 import { ContentSidebarProvider } from '@/contexts/content-sidebar-context';
 
 export default async function DiscussionDetailLayout({

@@ -1,6 +1,6 @@
 'use client';
 
-import { ContentSidebarWrapper } from '@/components/content-sidebar-wrapper';
+import { ContentSidebarWrapper } from '@/components/layout/content-sidebar-wrapper';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useCourse } from '@/hooks/use-lms-api';
 
@@ -11,7 +11,6 @@ interface CourseContentSidebarProps {
 export function CourseContentSidebar({ courseId }: CourseContentSidebarProps) {
   // Fetch course data using React Query
   const { data: course, isLoading } = useCourse(courseId);
-  console.log('course', course);
 
   if (isLoading) {
     return (

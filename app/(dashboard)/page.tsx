@@ -1,8 +1,8 @@
 'use client';
 
-import { ActivityCard } from '@/components/activity-card';
-import { ActivityCardSkeleton } from '@/components/activity-card-skeleton';
-import { FilterButton } from '@/components/filter-button';
+import { ActivityCard } from '@/components/layout/activity-card';
+import { ActivityCardSkeleton } from '@/components/layout/activity-card-skeleton';
+import { FilterButton } from '@/components/layout/filter-button';
 import { Button } from '@/components/ui/button';
 import { CustomSelect } from '@/components/ui/custom-select';
 import { Input } from '@/components/ui/input';

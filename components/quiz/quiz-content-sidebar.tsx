@@ -1,6 +1,6 @@
 'use client';
 
-import { ContentSidebarWrapper } from '@/components/content-sidebar-wrapper';
+import { ContentSidebarWrapper } from '@/components/layout/content-sidebar-wrapper';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useQuiz } from '@/hooks/use-lms-api';
 

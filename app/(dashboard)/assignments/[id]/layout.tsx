@@ -1,8 +1,8 @@
-import { AssignmentContentSidebar } from '@/components/assignment-content-sidebar';
-import { ContentSidebarTrigger } from '@/components/content-sidebar-trigger';
+import { AssignmentContentSidebar } from '@/components/assignment/assignment-content-sidebar';
+import { ContentSidebarTrigger } from '@/components/layout/content-sidebar-trigger';
 import { ContentSidebarProvider } from '@/contexts/content-sidebar-context';
 
-export default async function AssignmentDetailLayout({
+export default async function AssignentDetailLayout({
   children,
   params,
 }: {

@@ -1,6 +1,6 @@
 'use client';
 
-import { CourseBreadcrumb } from '@/components/course-breadcrumb';
+import { CourseBreadcrumb } from '@/components/course/course-breadcrumb';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useCourse, useUpdateCourse } from '@/hooks/use-lms-api';

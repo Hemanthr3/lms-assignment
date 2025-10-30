@@ -1,6 +1,6 @@
 'use client';
 
-import { ContentSidebar, SidebarData } from '@/components/content-sidebar';
+import { ContentSidebar, SidebarData } from '@/components/layout/content-sidebar';
 import { useContentSidebar } from '@/contexts/content-sidebar-context';
 
 interface ContentSidebarWrapperProps {
@@ -13,7 +13,6 @@ export function ContentSidebarWrapper({
   baseUrl,
 }: ContentSidebarWrapperProps) {
   const { isOpen, close } = useContentSidebar();
-  console.log('data', data);
 
   return (
     <>
