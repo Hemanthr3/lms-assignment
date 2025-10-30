@@ -1,24 +1,25 @@
 'use client';
 
 import { ActivityCard } from '@/components/activity-card';
+import { FilterButton } from '@/components/filter-button';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import {
+  ActivityStatus,
+  ActivityType,
+  getAllActivityStatuses,
+  getAllActivityTypes,
+} from '@/config/activities.config';
 import { useActivities } from '@/hooks/use-lms-api';
 import { Heart, Search } from 'lucide-react';
 import { useMemo, useState } from 'react';
 
-type ActivityType = 'COURSE' | 'QUIZ' | 'ASSIGNMENT' | 'DISCUSSION' | 'ALL';
-type ActivityStatus =
-  | 'NOT_STARTED'
-  | 'IN_PROGRESS'
-  | 'COMPLETED'
-  | 'UPCOMING'
-  | 'ALL';
-
 export default function ActivitiesPage() {
   const [searchQuery, setSearchQuery] = useState('');
-  const [typeFilter, setTypeFilter] = useState<ActivityType>('ALL');
-  const [statusFilter, setStatusFilter] = useState<ActivityStatus>('ALL');
+  const [typeFilter, setTypeFilter] = useState<ActivityType | 'ALL'>('ALL');
+  const [statusFilter, setStatusFilter] = useState<ActivityStatus | 'ALL'>(
+    'ALL'
+  );
   const [showFavouritesOnly, setShowFavouritesOnly] = useState(false);
 
   const { data: activities, isLoading } = useActivities();
@@ -107,41 +108,19 @@ export default function ActivitiesPage() {
               Type
             </p>
             <div className="flex gap-2 overflow-x-auto pb-2">
-              <Button
-                variant={typeFilter === 'ALL' ? 'default' : 'outline'}
-                size="sm"
+              <FilterButton
+                label="All"
+                isActive={typeFilter === 'ALL'}
                 onClick={() => setTypeFilter('ALL')}
-              >
-                All
-              </Button>
-              <Button
-                variant={typeFilter === 'COURSE' ? 'default' : 'outline'}
-                size="sm"
-                onClick={() => setTypeFilter('COURSE')}
-              >
-                Courses
-              </Button>
-              <Button
-                variant={typeFilter === 'QUIZ' ? 'default' : 'outline'}
-                size="sm"
-                onClick={() => setTypeFilter('QUIZ')}
-              >
-                Quizzes
-              </Button>
-              <Button
-                variant={typeFilter === 'ASSIGNMENT' ? 'default' : 'outline'}
-                size="sm"
-                onClick={() => setTypeFilter('ASSIGNMENT')}
-              >
-                Assignments
-              </Button>
-              <Button
-                variant={typeFilter === 'DISCUSSION' ? 'default' : 'outline'}
-                size="sm"
-                onClick={() => setTypeFilter('DISCUSSION')}
-              >
-                Discussions
-              </Button>
+              />
+              {getAllActivityTypes().map((config) => (
+                <FilterButton
+                  key={config.type}
+                  label={config.label + 's'}
+                  isActive={typeFilter === config.type}
+                  onClick={() => setTypeFilter(config.type)}
+                />
+              ))}
             </div>
           </div>
 
@@ -151,41 +130,19 @@ export default function ActivitiesPage() {
               Status
             </p>
             <div className="flex gap-2 overflow-x-auto pb-2">
-              <Button
-                variant={statusFilter === 'ALL' ? 'default' : 'outline'}
-                size="sm"
+              <FilterButton
+                label="All"
+                isActive={statusFilter === 'ALL'}
                 onClick={() => setStatusFilter('ALL')}
-              >
-                All
-              </Button>
-              <Button
-                variant={statusFilter === 'NOT_STARTED' ? 'default' : 'outline'}
-                size="sm"
-                onClick={() => setStatusFilter('NOT_STARTED')}
-              >
-                Not Started
-              </Button>
-              <Button
-                variant={statusFilter === 'IN_PROGRESS' ? 'default' : 'outline'}
-                size="sm"
-                onClick={() => setStatusFilter('IN_PROGRESS')}
-              >
-                In Progress
-              </Button>
-              <Button
-                variant={statusFilter === 'COMPLETED' ? 'default' : 'outline'}
-                size="sm"
-                onClick={() => setStatusFilter('COMPLETED')}
-              >
-                Completed
-              </Button>
-              <Button
-                variant={statusFilter === 'UPCOMING' ? 'default' : 'outline'}
-                size="sm"
-                onClick={() => setStatusFilter('UPCOMING')}
-              >
-                Upcoming
-              </Button>
+              />
+              {getAllActivityStatuses().map((config) => (
+                <FilterButton
+                  key={config.status}
+                  label={config.label}
+                  isActive={statusFilter === config.status}
+                  onClick={() => setStatusFilter(config.status)}
+                />
+              ))}
             </div>
           </div>
         </div>

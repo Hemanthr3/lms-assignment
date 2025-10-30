@@ -1,9 +1,12 @@
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
-import { BookOpen, Calendar, Clock, Heart, Star, Users } from 'lucide-react';
-
-type ActivityType = 'COURSE' | 'QUIZ' | 'ASSIGNMENT' | 'DISCUSSION';
-type ActivityStatus = 'NOT_STARTED' | 'IN_PROGRESS' | 'COMPLETED' | 'UPCOMING';
+import {
+  ActivityStatus,
+  ActivityType,
+  getActivityTypeConfig,
+  getTypeColorClass,
+} from '@/config/activities.config';
+import { Clock, Heart, Star, Users } from 'lucide-react';
 
 interface ActivityProgress {
   totalChapters?: number;
@@ -66,53 +69,9 @@ export function ActivityCard({
     }
   };
 
-  // Get type-specific details
-  const getTypeDetails = () => {
-    switch (type) {
-      case 'COURSE':
-        return {
-          label: 'Course',
-          icon: BookOpen,
-          color: 'text-blue-600 bg-blue-50 dark:bg-blue-950',
-          details: progress
-            ? `${progress.completedChapters || 0}/${
-                progress.totalChapters || 0
-              } chapters`
-            : null,
-        };
-      case 'QUIZ':
-        return {
-          label: 'Quiz',
-          icon: BookOpen,
-          color: 'text-purple-600 bg-purple-50 dark:bg-purple-950',
-          details: progress
-            ? `${progress.totalQuestions || 0} questions • Score: ${
-                progress.score || 0
-              }%`
-            : null,
-        };
-      case 'ASSIGNMENT':
-        return {
-          label: 'Assignment',
-          icon: Calendar,
-          color: 'text-orange-600 bg-orange-50 dark:bg-orange-950',
-          details: progress?.daysUntilDue
-            ? `Due in ${progress.daysUntilDue} days`
-            : null,
-        };
-      case 'DISCUSSION':
-        return {
-          label: 'Discussion',
-          icon: Users,
-          color: 'text-green-600 bg-green-50 dark:bg-green-950',
-          details: null,
-        };
-    }
-  };
-
   const actionButton = getActionButton();
-  const typeDetails = getTypeDetails();
-  const TypeIcon = typeDetails.icon;
+  const typeConfig = getActivityTypeConfig(type);
+  const TypeIcon = typeConfig.icon;
 
   return (
     <div className="group relative bg-card border rounded-lg overflow-hidden hover:shadow-lg transition-all duration-200">
@@ -143,21 +102,33 @@ export function ActivityCard({
         {/* Status Badge */}
         <div className="absolute top-2 left-2">
           <span
-            className={`text-xs font-medium px-2 py-1 rounded ${typeDetails.color}`}
+            className={`text-xs font-medium px-2 py-1 rounded ${getTypeColorClass(
+              type
+            )}`}
           >
-            {typeDetails.label}
+            {typeConfig.label}
           </span>
         </div>
       </div>
 
       {/* Content */}
       <div className="p-4 space-y-3">
-        {/* Subject Tag */}
-        {subject && (
-          <span className="inline-block text-xs font-medium text-primary">
-            {subject}
+        {/* Type and Subject Tags */}
+        <div className="flex items-center gap-2 flex-wrap">
+          <span
+            className={`inline-flex items-center gap-1 text-xs font-semibold py-1 rounded ${getTypeColorClass(
+              type
+            )}`}
+          >
+            <TypeIcon className="h-3 w-3" />
+            {typeConfig.label}
           </span>
-        )}
+          {subject && (
+            <span className="inline-block text-xs font-medium px-2 py-1 rounded-full bg-muted text-muted-foreground">
+              {subject}
+            </span>
+          )}
+        </div>
 
         {/* Title */}
         <h3 className="font-semibold text-lg line-clamp-2 leading-tight">
@@ -185,8 +156,14 @@ export function ActivityCard({
             </div>
           )}
           {rating && (
-            <div className="flex items-center gap-1">
-              <Star className="h-3 w-3 fill-yellow-500 text-yellow-500" />
+            <div
+              className="flex items-center gap-1 font-medium"
+              style={{ color: '#d97706' }}
+            >
+              <Star
+                className="h-3 w-3"
+                style={{ fill: '#fbbf24', color: '#fbbf24' }}
+              />
               {rating}/5
             </div>
           )}
@@ -206,33 +183,53 @@ export function ActivityCard({
             <div className="space-y-2">
               <div className="flex items-center gap-3">
                 <Progress
-                  value={50}
+                  value={progress.percentComplete}
+                  isCompleted={
+                    status === 'COMPLETED' ||
+                    progress.percentComplete === 100 ||
+                    (type === 'QUIZ' && progress.passed)
+                  }
                   className="h-2 flex-1"
                 />
-                <span className="text-sm font-semibold text-orange-600 min-w-[45px] text-right">
+                <span
+                  className={`text-sm font-semibold min-w-[45px] text-right ml-2 ${
+                    status === 'COMPLETED' ||
+                    progress.percentComplete === 100 ||
+                    (type === 'QUIZ' && progress.passed)
+                      ? 'text-green-600'
+                      : 'text-orange-600'
+                  }`}
+                >
                   {progress.percentComplete}%
                 </span>
               </div>
               {type === 'COURSE' && progress.totalChapters && (
-                <p className="text-xs text-muted-foreground">
+                <p
+                  className={`text-xs font-medium ${
+                    progress.completedChapters === progress.totalChapters
+                      ? 'text-green-600 dark:text-green-400'
+                      : 'text-muted-foreground'
+                  }`}
+                >
+                  {progress.completedChapters === progress.totalChapters &&
+                    '✓ '}
                   {progress.completedChapters}/{progress.totalChapters} chapters
                   completed
                 </p>
               )}
               {type === 'QUIZ' && progress.score !== undefined && (
-                <p className="text-xs text-muted-foreground">
+                <p
+                  className={`text-xs font-medium ${
+                    progress.passed
+                      ? 'text-green-600 dark:text-green-400'
+                      : 'text-muted-foreground'
+                  }`}
+                >
                   Score: {progress.score}%{progress.passed && ' ✓ Passed'}
                 </p>
               )}
             </div>
           )}
-
-        {/* Type-specific Details (for Assignment/Discussion) */}
-        {typeDetails.details && !progress?.percentComplete && (
-          <p className="text-xs text-muted-foreground font-medium">
-            {typeDetails.details}
-          </p>
-        )}
 
         {/* Action Button */}
         <Button
