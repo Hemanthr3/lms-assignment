@@ -135,7 +135,6 @@ Some highlights:
 - 🧱 Breadcrumbs for navigation clarity
 - 💡 Tooltips for contextual help
 - 🔔 Toasters for instant feedback
-- ⭐ Animated favorite interactions
 - 🧩 Modular and reusable components
 
 I customized and extended **shadcn/ui** components to make them more dynamic and consistent with the design language of an LMS.
